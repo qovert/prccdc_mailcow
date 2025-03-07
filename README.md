@@ -1,4 +1,13 @@
 # PRCCDC Mailserver
+```
+ __          __     _____  _   _ _____ _   _  _____     _______ ______  _____ _______    ____  _   _ _  __     __
+ \ \        / /\   |  __ \| \ | |_   _| \ | |/ ____|_  |__   __|  ____|/ ____|__   __|  / __ \| \ | | | \ \   / /
+  \ \  /\  / /  \  | |__) |  \| | | | |  \| | |  __(_)    | |  | |__  | (___    | |    | |  | |  \| | |  \ \_/ /
+   \ \/  \/ / /\ \ |  _  /| . ` | | | | . ` | | |_ |      | |  |  __|  \___ \   | |    | |  | | . ` | |   \   /
+    \  /\  / ____ \| | \ \| |\  |_| |_| |\  | |__| |_     | |  | |____ ____) |  | |    | |__| | |\  | |____| |
+     \/  \/_/    \_\_|  \_\_| \_|_____|_| \_|\_____(_)    |_|  |______|_____/   |_|     \____/|_| \_|______|_|
+```
+
 
 This project provides Ansible playbooks to join an server to an Active Directory domain and to set up Dockerized Mailcow. It automates the process of installing necessary packages, discovering the domain, joining the domain, configuring the System Security Services Daemon (SSSD), and allowing domain users to use sudo privileges. After all that, it sets up Mailcow using Docker.
 
