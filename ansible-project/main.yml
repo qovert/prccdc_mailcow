@@ -1,0 +1,17 @@
+---
+- hosts: mailcow
+  become: yes
+
+  vars_files:
+    - vars/ad_auth.yml 
+    - vars/mailcow.yml
+
+  tasks:
+    - name: Include domain tasks
+      import_tasks: tasks/domain_join.yml
+    
+    - name: Include Docker tasks
+      import_tasks: tasks/docker_install.yml
+ 
+    - name: Include Dockerized Mailcow tasks
+      import_tasks: tasks/dockerized_mailcow.yml

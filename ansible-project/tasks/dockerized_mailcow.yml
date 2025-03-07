@@ -1,0 +1,58 @@
+---
+- name: Clone the Dockerized Mailcow Git repository
+  git:
+    repo: https://github.com/mailcow/mailcow-dockerized.git
+    dest: "/opt/mailcow-dockerized"
+    version: master
+    force: yes
+
+- name: Create a directory for mailcow-ldap to store SQLite database
+  file:
+    path: "/opt/mailcow-dockerized/data/ldap"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Copy mailcow.conf to the target machine
+  copy:
+    src: "{{ mailcow_conf_src }}"
+    dest: "/opt/mailcow-dockerized/mailcow.conf"
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Copy docker-compose.yml to the target machine
+  copy:
+    src: "{{ docker_compose_src }}"
+    dest: "/opt/mailcow-dockerized/docker-compose.yml"
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Copy docker-compose.override.yml to the target machine
+  copy:
+    src: "{{ docker_compose_override_src }}"
+    dest: "/opt/mailcow-dockerized/docker-compose.override.yml"
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Add configuration to unbound.conf fixing unhealthy container state
+  blockinfile:
+    path: "/opt/mailcow-dockerized/data/conf/unbound/unbound.conf"
+    block: |
+      forward-zone:
+        name: "."
+        forward-addr: 1.1.1.1
+        forward-addr: 1.0.0.1
+
+- name: Pull the latest Mailcow Docker images
+  command: docker compose pull
+  args:
+    chdir: "/opt/mailcow-dockerized"
+
+- name: Start Mailcow using Docker Compose
+  command: docker compose up -d
+  args:
+    chdir: "/opt/mailcow-dockerized"

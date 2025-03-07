@@ -1,0 +1,21 @@
+services:
+  ldap-mailcow:
+    image: programmierus/ldap-mailcow
+    network_mode: host
+    container_name: mailcowcustomized_ldap-mailcow
+    depends_on:
+        - nginx-mailcow
+    volumes:
+        - ./data/ldap:/db:rw
+        - ./data/conf/dovecot:/conf/dovecot:rw
+        - ./data/conf/sogo:/conf/sogo:rw
+    environment:
+        - LDAP-MAILCOW_LDAP_URI=ldap://win.test.lan
+        - LDAP-MAILCOW_LDAP_BASE_DN=OU=Staff,DC=win,DC=test,DC=lan
+        - LDAP-MAILCOW_LDAP_BIND_DN=srv_ldap@win.test.lan
+        - LDAP-MAILCOW_LDAP_BIND_DN_PASSWORD=JHorseC1!
+        - LDAP-MAILCOW_API_HOST=http://cube/
+        - LDAP-MAILCOW_API_KEY=B41F9B-67712F-3B2F9D-EBB1BC-376190
+        - LDAP-MAILCOW_SYNC_INTERVAL=300
+        - LDAP-MAILCOW_LDAP_FILTER=(&(objectclass=person)(userPrincipalName=*))
+        - LDAP-MAILCOW_SOGO_LDAP_FILTER=objectclass='person' AND userPrincipalName='*'

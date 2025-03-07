@@ -1,0 +1,5 @@
+---
+mailcow_dir: /opt/mailcow
+mailcow_conf_src: files/mailcow.conf
+docker_compose_src: files/docker-compose.yml
+docker_compose_override_src: files/docker-compose.override.yml
