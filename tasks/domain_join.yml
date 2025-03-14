@@ -43,14 +43,17 @@
     owner: root
     group: root
     mode: '0600'
+  when: ad_domain not in realm_list.stdout
 
 - name: Restart SSSD service
   service:
     name: sssd
     state: restarted
+  when: ad_domain not in realm_list.stdout
 
 - name: Ensure pam_mkhomedir.so is present in common-session
   lineinfile:
     path: /etc/pam.d/common-session
     line: "session required pam_mkhomedir.so skel=/etc/skel umask=0077"
     state: present
+  when: ad_domain not in realm_list.stdout
