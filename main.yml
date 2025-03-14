@@ -9,13 +9,22 @@
   tasks:
     - name: Check if the machine is already joined to a domain
       command: realm list
-      register: realm_list
+      register: realm_output
       changed_when: false
       ignore_errors: true
 
+    - name: Extract domain from realm output
+      set_fact:
+        joined_domain: >-
+          {{ (realm_output.stdout_lines | select('search', '^ *domain-name: ') | list | first | default('') | split(': ') | last) }}
+
+    - name: Set domain_joined fact
+      set_fact:
+        domain_joined: "{{ joined_domain == ad_domain if ad_domain else joined_domain != '' }}"
+
     - name: Include domain tasks if not joined to a domain
       import_tasks: tasks/domain_join.yml
-      when: realm_list.failed or realm_list.stdout == ""
+      when: domain_joined | default(false) | bool
 
     - name: Include Docker tasks
       import_tasks: tasks/docker_install.yml
