@@ -7,11 +7,18 @@
     - vars/mailcow.yml
 
   tasks:
-    - name: Include domain tasks
+    - name: Check if the machine is already joined to a domain
+      command: realm list
+      register: realm_list
+      changed_when: false
+      ignore_errors: true
+
+    - name: Include domain tasks if not joined to a domain
       import_tasks: tasks/domain_join.yml
-    
+      when: realm_list.failed or realm_list.stdout == ""
+
     - name: Include Docker tasks
       import_tasks: tasks/docker_install.yml
- 
+
     - name: Include Dockerized Mailcow tasks
       import_tasks: tasks/dockerized_mailcow.yml
