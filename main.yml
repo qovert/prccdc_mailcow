@@ -40,9 +40,9 @@
       set_fact:
         docker_installed: "{{ docker_check.rc == 0 }}"
 
-    - name: Debug Docker install status
+    - name: Debug AD join status
       debug:
-        msg: "Docker installed: {{ docker_check.rc == 0 }}"
+        msg: "AD Domain: {{ joined_domain }}"
 
     - name: Include domain tasks if not joined to a domain
       import_tasks: tasks/domain_join.yml
