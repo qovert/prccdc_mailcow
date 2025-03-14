@@ -11,23 +11,46 @@
       command: realm list
       register: realm_output
       changed_when: false
-      ignore_errors: true
+      failed_when: false  
 
-    - name: Extract domain from realm output
+    - name: Extract domain name from realm output
       set_fact:
         joined_domain: >-
-          {{ (realm_output.stdout_lines | select('search', '^ *domain-name: ') | list | first | default('') | split(': ') | last) }}
+          {{
+            (realm_output.stdout_lines
+            | select('search', '^ *domain-name: ')
+            | list | first | default('N/A')
+            | split(': ') | last)
+          }}
 
-    - name: Set domain_joined fact
+    - name: Evaluate domain membership
       set_fact:
-        domain_joined: "{{ joined_domain == ad_domain if ad_domain else joined_domain != '' }}"
+        domain_joined: >-
+          {{ (ad_domain 
+             | default('') == joined_domain) if ad_domain 
+             | default('') else joined_domain != 'N/A' }}
+
+    - name: Check if Docker is installed
+      command: docker --version
+      register: docker_check
+      changed_when: false
+      failed_when: false
+
+    - name: Set docker_installed fact
+      set_fact:
+        docker_installed: "{{ docker_check.rc == 0 }}"
+
+    - name: Debug Docker install status
+      debug:
+        msg: "Docker installed: {{ docker_check.rc == 0 }}"
 
     - name: Include domain tasks if not joined to a domain
       import_tasks: tasks/domain_join.yml
-      when: domain_joined | default(false) | bool
+      when: not domain_joined | default(false) | bool
 
-    - name: Include Docker tasks
+    - name: Include Docker tasks if Docker is not installed
       import_tasks: tasks/docker_install.yml
+      when: not docker_installed | default(false) | bool
 
     - name: Include Dockerized Mailcow tasks
       import_tasks: tasks/dockerized_mailcow.yml
